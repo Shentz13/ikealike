@@ -195,12 +195,29 @@ h2 {
   transition-delay: 0.95s;
 }
 
-#lineForm {
+.lineForm {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-#lineForm .form-group {
+.lineForm .form-group {
   width: 30%;
+}
+
+fieldset {
+  background-color: #e3e3e3;
+  margin: 5px 0px !important;
+  padding: 5px !important;
+}
+
+.alert {
+  margin-top: 1rem;
+  margin-bottom: 5px !important;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }

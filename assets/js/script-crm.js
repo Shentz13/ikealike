@@ -23,20 +23,15 @@ $(document).ready(function () {
           console.log(users.data);
           var select = $('.selectpicker');
 
+          // Initialisation selectpicker
         $.each(users.data , function(index, user) { 
-
             $(select).append('<option value="'+user.id +'">'+ user.name + '</option>');
-
         })
 
         $(select).appendTo($('.form-group-select')).selectpicker('refresh');
       });
 
-
-      function calculerPrix(prix, promotion) {
-          return prix * (1 - promotion / 100);
-      }
-
+    // Remplissage modal create/update
     $(document).on("click", ".portfolio-item__link", function () {
         openModal($(this));
     })
@@ -46,14 +41,25 @@ $(document).ready(function () {
         var id = $(article).attr('data-id');
         $("#modalPicture").css("background-image", "URL('"+$(article).attr('data-img')+"')");
         $("#modalName").text($(article).attr('data-nom'));
-        $('input[name="prix_normal"]').val($(article).attr('data-price'));
+        $('input[name="prix_normal"], input[name="prix_normal_global"]').val($(article).attr('data-price'));
+    }
+
+    // Calcul prix remisé
+    function calculerPrix(prix, promotion) {
+        return prix * (1 - promotion / 100);
     }
 
     $(document).on("change", 'input[name="promotion"]', function() {
-        var prix_normal = $(this).parents('#lineForm').find('input[name="prix_normal"]');
-$('input[name="prix_remise"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
+        var prix_normal = $(this).parents('.lineForm').find('input[name="prix_normal"]');
+        $('input[name="prix_remise"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
     })
 
+    $(document).on("change", 'input[name="promotion_global"]', function() {
+        var prix_normal = $(this).parents('.lineForm').find('input[name="prix_normal_global"]');
+        $('input[name="prix_remise_global"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
+    })
+
+    //Template article
     const displayContent = (content) => {
 
         $.each(content , function(index, item) { 
@@ -86,28 +92,28 @@ $('input[name="prix_remise"]').val(calculerPrix($(prix_normal).val(), $(this).va
 
     }
 
+    // Create - update promotion spécifique
     $("#promotionForm").submit(function (e) {
         e.preventDefault();
-        /*
-        $.ajax({
 
-            url: 'http://localhost:8000/api/product/show',
-            type: 'POST',
-            contentType: "application/json",
-            processData: false,
-            dataType: 'json',
-            error: function (xhr, status) {
-                if(xhr.status != "201"){ // 201 means it is Created, rather than 200 which means Success
-                    $("#statusEnrollmentMsg").text("Fail " + status);
-                    console.log(error);
-                }else{
-                    $("#textbox").text("success");  
-                }
+        var formdata = new FormData(this);
+        console.log(formdata);
+/*
+        fetch("http://localhost:8000/api/product", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
-            success: function (result) {
-                console.log("result:",result);
-            }
-        });*/
+          }).then((response) => response.json()).then((products) => {
+              console.log(products.data.data);
+              displayContent(products.data.data);
+          });*/
+    })
+
+    // Create - update promotion globale
+    $("#promotionFormGlobal").submit(function (e) {
+        e.preventDefault();
     })
 
 })
