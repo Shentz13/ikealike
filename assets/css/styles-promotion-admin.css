@@ -1,0 +1,102 @@
+@font-face {
+    font-family: Roboto;
+    src: url('../font/Roboto/Roboto-Medium.ttf');
+}
+
+* {
+    font-family: Roboto;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    background-color: #f5f5f5 !important;
+    color: #3c3c3c;
+}
+
+main {
+    margin-top: 65px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: calc(1200px + 2.5rem);
+}
+
+header {
+    background-color: #3c3c3c;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 20px;
+}
+
+header a {
+    color: white;
+}
+
+header a:hover {
+    color: #ff6505;
+}
+
+h2 {
+    color: #3c3c3c;
+}
+
+h3 {
+    margin-top: 30px !important;
+}
+
+#table,
+#tableGlob {
+    width: 100%;
+}
+
+#table {
+    text-align: center;
+}
+
+
+
+#tableGlob {
+    margin: 0px 0px 30px 0;
+}
+
+#productCadre {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#statsCont {
+    width: 50%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+
+#statsCont li span {
+    font-weight: bold;
+}
+
+.picture {
+    width: 50%;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.cardS {
+    box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+    background-color: white;
+    padding: 1.25rem;
+}

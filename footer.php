@@ -14,7 +14,7 @@
 </script>
 <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 <!-- Chargement du code Javascript de la page -->
-<script src="./assets/js/script-crm.js"></script>
+<script src="./assets/js/script-<?= $pageName ?>.js"></script>
 </body>
 
 </html>

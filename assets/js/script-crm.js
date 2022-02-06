@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+/*
         // Récupération des utilisateurs
     fetch("http://localhost:8080/api/user", {
         method: "GET",
@@ -17,9 +17,9 @@ $(document).ready(function () {
         })
 
         $(select).appendTo($('.form-group-select')).selectpicker('refresh');
-      });
+      });*/
 
-
+/*
     function loadModal(id_produit) {
         
         fetch("http://localhost:8000/api/product/"+id_produit, {
@@ -48,7 +48,7 @@ $(document).ready(function () {
               }
           })
     }
-
+*/
         // Remplissage modal create/update
         $(document).on("click", ".editLink", function () {
         
@@ -116,7 +116,7 @@ $(document).ready(function () {
       })
           .then((x) => x.json())
           .then((x) => {
-console.log(x.data);
+
               const dataArray = [];
               const columnsToExclude = [
                 "created_at",
@@ -131,6 +131,12 @@ console.log(x.data);
                     .replace(/([A-Z])/g, " $1")
                     .toUpperCase().replace(/_/g, " ");// => pour transformer du snake case;
                   column.data = key;
+                  if(key == "users") {
+                      column.title = "PROMOTIONS SPÉCIFIQUES"
+                  }
+                  if(key == "promotion") {
+                    column.title = "PROMOTION GLOBALE"
+                }
                   // Paramètres spécifiques
                   if ((key == "created_at") || (key == "updated_at")) {
                     column.render = function (data) {
@@ -144,7 +150,7 @@ console.log(x.data);
                         `');"></div>`
                       );
                     };
-                } else if ((key == "price")||(key == "promotion")) {
+                } else if (key == "price") {
                     column.render = function (data) {
                         if((data != 0) && (data != null)) {
                         return (
@@ -154,6 +160,26 @@ console.log(x.data);
                         return '';
                     }
                       };
+                    } else if (key == "promotion") {
+                        column.render = function (data) {
+                            if((data != 0) && (data != null)) {
+                            return (
+                              data + ` %`
+                            );
+                        } else {
+                            return '';
+                        }
+                          };
+                } else if (key == "users") {
+                    column.render = function (data) {
+                        var count = data.length;
+                        if(data.length > 1) {
+                        count = count + " différentes"
+                        }
+                    return(
+                        count
+                    )
+                    }
                 }
                   dataArray.push(column);
                 }
@@ -169,11 +195,13 @@ console.log(x.data);
                         dataAttributes += "data-" + key.toLowerCase() + '="' + value + '" ';
                     })
                   return (
+                      '<a href="promotion-admin.php?product='+row.id+'"><i class="far fa-edit"></i></a>'
+                      /*
                     '<div class="btn btn-outline-blue editLink mr-3" data-id="' +
                     row.id +
                     '"' +
                     dataAttributes +
-                    ' data-toggle="modal" data-target="#promotionModal"><i class="far fa-edit"></i></div>'
+                    ' data-toggle="modal" data-target="#promotionModal"><i class="far fa-edit"></i></div>'*/
                   );
                 },
               });

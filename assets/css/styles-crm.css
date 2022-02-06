@@ -31,6 +31,24 @@ h2 {
   color: #3c3c3c;
 }
 
+header {
+  background-color: #3c3c3c;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+}
+
+header a {
+  color: white;
+}
+
+header a:hover {
+  color: #ff6505;
+}
+
 .portfolio-effect {
   display: flex;
   justify-content: flex-start;
