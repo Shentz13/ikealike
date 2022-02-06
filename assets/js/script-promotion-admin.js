@@ -46,12 +46,14 @@ fetch("http://localhost:8000/api/product", {
               
               const found = product.data.find(element => element.id == id_produit);
               const normalPrice = found.price;
+              const produit_id = found.id;
               const promotionGlobale = found.promotion;
 
               $(".picture").css("background-image", "URL('"+found.img+"')");
               $("#categorySpan").text(found.category);
               $("#nameSpan").text(found.name);
               $("#priceSpan").text(found.price);
+              $("#product-id, #product-id-global").val(found.id);
 
               $('input[name="prix_normal"], input[name="prix_normal_global"]').val(normalPrice);
 
@@ -120,7 +122,7 @@ fetch("http://localhost:8000/api/product", {
                         dataAttributes += "data-" + key.toLowerCase() + '="' + value + '" ';
                     })
                   return (
-                      '<button type="button" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>'
+                      '<button type="button" id="deleteSpecific" data-delete-id="'+produit_id+'" data-user="'+row.id+'" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>'
                   );
                 },
               });
@@ -198,13 +200,7 @@ fetch("http://localhost:8000/api/product", {
                         dataAttributes += "data-" + key.toLowerCase() + '="' + value + '" ';
                     })
                   return (
-                      '<a href="promotion-admin.php?product='+row.id+'"><i class="far fa-edit"></i></a>'
-                      /*
-                    '<div class="btn btn-outline-blue editLink mr-3" data-id="' +
-                    row.id +
-                    '"' +
-                    dataAttributes +
-                    ' data-toggle="modal" data-target="#promotionModal"><i class="far fa-edit"></i></div>'*/
+                    '<button type="button" id="deleteGlobal" data-delete-id="'+row.id+'" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>'
                   );
                 },
               });
@@ -214,7 +210,7 @@ fetch("http://localhost:8000/api/product", {
               }
               tableAdminGlobal = $("#tableAdminGlobal").DataTable({
                 columns: dataArrayGlobal,
-                data: found,
+                data: [found],
                 scrollX: true,
                 autoWidth: false,
                 order: [[0, "asc"]],
@@ -232,6 +228,11 @@ fetch("http://localhost:8000/api/product", {
         $(document).on("change", 'input[name="promotion"]', function() {
             var prix_normal = $(this).parents('.lineForm').find('input[name="prix_normal"]');
             $('input[name="prix_remise"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
+        })
+
+        $(document).on("change", 'input[name="promotion_global"]', function() {
+            var prix_normal = $(this).parents('.lineForm').find('input[name="prix_normal_global"]');
+            $('input[name="prix_remise_global"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
         })
           
            // Create promotion spécifique
@@ -254,9 +255,71 @@ fetch("http://localhost:8000/api/product", {
               Accept: "application/json",
             },
             body: JSON.stringify(params)
-          }).then((response) => loadModal(id)
+          }).then((response) => location.reload()
           );
     })
+
+               // Create promotion globale
+               $("#promotionFormGlobal").submit(function (e) {
+                e.preventDefault();
+        
+                var usersValues = []
+                id = $("#product-id-global").val();
+        
+                var params = {
+                    product_id: id,
+                    promotion: $('input[name="promotion_global"]').val(),
+                    users: usersValues
+                }
+        
+                fetch("http://localhost:8000/api/promotion", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Accept: "application/json",
+                    },
+                    body: JSON.stringify(params)
+                  }).then((response) => console.log("c")//location.reload()
+                  );
+            })
+
+            // Delete
+
+            $(document).on('click', "#deleteGlobal", function() {
+
+                var params = {
+                    product_id: $(this).attr('data-delete-id'),
+                    users: []
+                }
+
+                fetch("http://localhost:8000/api/delete", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Accept: "application/json",
+                    },
+                    body: JSON.stringify(params)
+                  }).then((response) => location.reload()
+                  );
+            })
+           
+            $(document).on('click', "#deleteSpecific", function() {
+
+                var params = {
+                    product_id: $(this).attr('data-delete-id'),
+                    users: [$(this).attr('data-user')]
+                }
+
+                fetch("http://localhost:8000/api/delete", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Accept: "application/json",
+                    },
+                    body: JSON.stringify(params)
+                  }).then((response) => console.log('d')//location.reload()
+                  );
+            })
         
       //Initialisation de dataTable avec des paramètres personnalisés
   if ($.fn.dataTable) {

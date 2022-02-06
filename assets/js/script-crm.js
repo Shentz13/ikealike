@@ -1,107 +1,4 @@
 $(document).ready(function () {
-/*
-        // Récupération des utilisateurs
-    fetch("http://localhost:8080/api/user", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }).then((response) => response.json()).then((users) => {
-          console.log(users.data);
-          var select = $('.selectpicker');
-
-          // Initialisation selectpicker
-        $.each(users.data , function(index, user) { 
-            $(select).append('<option value="'+user.id +'">'+ user.name + '</option>');
-        })
-
-        $(select).appendTo($('.form-group-select')).selectpicker('refresh');
-      });*/
-
-/*
-    function loadModal(id_produit) {
-        
-        fetch("http://localhost:8000/api/product/"+id_produit, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }).then((x) => x.json())
-          .then((product) => {
-              console.log(product.data);
-
-              $("#modalPicture").css("background-image", "URL('"+product.data.img+"')");
-              $("#modalName").text(product.data.name);
-              $('input[name="prix_normal"], input[name="prix_normal_global"]').val(product.data.price);
-              $("#product-id").val(product.data.id);
-
-              if(product.data.promotion != null) {
-                $('input[name="promotion_global"]').val(product.data.promotion);
-                $('input[name="prix_remise_global"]').val(calculerPrix(product.data.price, product.data.promotion));
-                $('input[name="promotion_global"]').attr('readonly', true);
-
-                $("#submitGlobal").addClass("hidden");
-              } else {
-                $("#submitGlobal").removeClass("hidden"); 
-              }
-          })
-    }
-*/
-        // Remplissage modal create/update
-        $(document).on("click", ".editLink", function () {
-        
-            loadModal($(this).attr('data-id'));
-        })
-
-    // Calcul prix remisé
-    function calculerPrix(prix, promotion) {
-        return prix * (1 - promotion / 100);
-    }
-
-    $(document).on("change", 'input[name="promotion"]', function() {
-        var prix_normal = $(this).parents('.lineForm').find('input[name="prix_normal"]');
-        $('input[name="prix_remise"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
-    })
-
-    $(document).on("change", 'input[name="promotion_global"]', function() {
-        var prix_normal = $(this).parents('.lineForm').find('input[name="prix_normal_global"]');
-        $('input[name="prix_remise_global"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
-    })
-
-    // Create - update promotion spécifique
-    $("#promotionForm").submit(function (e) {
-        e.preventDefault();
-
-        var usersValues = Array.isArray($("#selectUsers").val()) ? $("#selectUsers").val() : [$("#selectUsers").val()];
-        id = $("#product-id").val();
-
-        var params = {
-            product_id: id,
-            promotion: $('input[name="promotion"]').val(),
-            users: usersValues
-        }
-
-        fetch("http://localhost:8000/api/promotion", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify(params)
-          }).then((response) => loadModal(id)
-          );
-    })
-
-    // Create - update promotion globale
-    $("#promotionFormGlobal").submit(function (e) {
-        e.preventDefault();
-    })
-
-    $(document).on('click', '#delete-global', function() {
-
-    })
 
     var tableAdmin = null;
 
@@ -196,12 +93,6 @@ $(document).ready(function () {
                     })
                   return (
                       '<a href="promotion-admin.php?product='+row.id+'"><i class="far fa-edit"></i></a>'
-                      /*
-                    '<div class="btn btn-outline-blue editLink mr-3" data-id="' +
-                    row.id +
-                    '"' +
-                    dataAttributes +
-                    ' data-toggle="modal" data-target="#promotionModal"><i class="far fa-edit"></i></div>'*/
                   );
                 },
               });
@@ -296,35 +187,3 @@ $(document).ready(function () {
 
 })
 
-
-
-
-const data_send = 
-[
-    {
-        product_id:5,
-        promotion:50,
-        users: [1,2,3,4] // ou null si promotion globale
-    },
-    {
-        product_id:4,
-        promotion:35,
-        users: [1,2,3,4] // ou null si promotion globale
-    }
-];
-
-// si promo delete totalement
-[
-    {
-        product_id: 5,
-        users: null
-    }
-]
-
-// si promo delete pour X users
-[
-    {
-        product_id: 5,
-        users: [1,2]
-    }
-]
