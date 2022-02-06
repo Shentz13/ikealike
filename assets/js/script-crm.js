@@ -36,6 +36,16 @@ $(document).ready(function () {
               $("#modalName").text(product.data.name);
               $('input[name="prix_normal"], input[name="prix_normal_global"]').val(product.data.price);
               $("#product-id").val(product.data.id);
+
+              if(product.data.promotion != null) {
+                $('input[name="promotion_global"]').val(product.data.promotion);
+                $('input[name="prix_remise_global"]').val(calculerPrix(product.data.price, product.data.promotion));
+                $('input[name="promotion_global"]').attr('readonly', true);
+
+                $("#submitGlobal").addClass("hidden");
+              } else {
+                $("#submitGlobal").removeClass("hidden"); 
+              }
           })
     }
 
@@ -73,7 +83,7 @@ $(document).ready(function () {
             users: usersValues
         }
 
-        fetch("http://localhost:8000/api/promotion/store/"+id, {
+        fetch("http://localhost:8000/api/promotion", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -89,18 +99,9 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
+    $(document).on('click', '#delete-global', function() {
 
-
-
-
-
-
-
-
-
-
-
-
+    })
 
     var tableAdmin = null;
 
@@ -115,7 +116,7 @@ $(document).ready(function () {
       })
           .then((x) => x.json())
           .then((x) => {
-
+console.log(x.data);
               const dataArray = [];
               const columnsToExclude = [
                 "created_at",

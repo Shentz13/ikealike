@@ -27,7 +27,7 @@
                                 <label for="prix_normal_global">Prix</label>
                                 <div class="input-group mb-3">
                                     <input type="number" class="form-control" name="prix_normal_global" aria-label=""
-                                        step="0.01">
+                                        step="0.01" readonly>
                                     <div class="input-group-append">
                                         <span class="input-group-text">€</span>
                                     </div>
@@ -36,7 +36,8 @@
                             <div class="form-group">
                                 <label for="promotion_global">Promotion</label>
                                 <div class="input-group mb-3">
-                                    <input type="number" class="form-control" name="promotion_global" aria-label="">
+                                    <input type="number" class="form-control" name="promotion_global" aria-label=""
+                                        required>
                                     <div class="input-group-append">
                                         <span class="input-group-text">%</span>
                                     </div>
@@ -56,7 +57,7 @@
                     </fieldset>
                     <div class="btn-cont">
                         <button type="button" id="delete-global" class="btn btn-danger">Supprimer</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="submit" id="submitGlobal" class="btn btn-primary">Enregistrer</button>
                     </div>
                 </form>
 
@@ -73,7 +74,7 @@
                                 <label for="prix_normal">Prix</label>
                                 <div class="input-group mb-3">
                                     <input type="number" class="form-control" name="prix_normal" aria-label=""
-                                        step="0.01">
+                                        step="0.01" readonly>
                                     <div class="input-group-append">
                                         <span class="input-group-text">€</span>
                                     </div>
@@ -82,7 +83,7 @@
                             <div class="form-group">
                                 <label for="promotion">Promotion</label>
                                 <div class="input-group mb-3">
-                                    <input type="number" class="form-control" name="promotion" aria-label="">
+                                    <input type="number" class="form-control" name="promotion" aria-label="" required>
                                     <div class="input-group-append">
                                         <span class="input-group-text">%</span>
                                     </div>
@@ -101,13 +102,13 @@
 
                         <div class="form-group form-group-select">
                             <label for="users">Utilisateurs</label>
-                            <select name="users" id="selectUsers" class="selectpicker" multiple>
+                            <select name="users" id="selectUsers" class="selectpicker" multiple required>
                             </select>
                         </div>
                     </fieldset>
                     <div class="btn-cont">
                         <button type="button" id="delete-specific" class="btn btn-danger">Supprimer</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="submit" id="submitSpecific" class="btn btn-primary">Enregistrer</button>
                     </div>
 
                 </form>
