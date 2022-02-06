@@ -1,17 +1,5 @@
 $(document).ready(function () {
 
-    // Récupération des produits
-    fetch("http://localhost:8000/api/product", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }).then((response) => response.json()).then((products) => {
-          console.log(products.data.data);
-          displayContent(products.data.data);
-      });
-
         // Récupération des utilisateurs
     fetch("http://localhost:8080/api/user", {
         method: "GET",
@@ -31,18 +19,31 @@ $(document).ready(function () {
         $(select).appendTo($('.form-group-select')).selectpicker('refresh');
       });
 
-    // Remplissage modal create/update
-    $(document).on("click", ".portfolio-item__link", function () {
-        openModal($(this));
-    })
 
-    function openModal(article) {
+    function loadModal(id_produit) {
+        
+        fetch("http://localhost:8000/api/product/"+id_produit, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }).then((x) => x.json())
+          .then((product) => {
+              console.log(product.data);
 
-        var id = $(article).attr('data-id');
-        $("#modalPicture").css("background-image", "URL('"+$(article).attr('data-img')+"')");
-        $("#modalName").text($(article).attr('data-nom'));
-        $('input[name="prix_normal"], input[name="prix_normal_global"]').val($(article).attr('data-price'));
+              $("#modalPicture").css("background-image", "URL('"+product.data.img+"')");
+              $("#modalName").text(product.data.name);
+              $('input[name="prix_normal"], input[name="prix_normal_global"]').val(product.data.price);
+              $("#product-id").val(product.data.id);
+          })
     }
+
+        // Remplissage modal create/update
+        $(document).on("click", ".editLink", function () {
+        
+            loadModal($(this).attr('data-id'));
+        })
 
     // Calcul prix remisé
     function calculerPrix(prix, promotion) {
@@ -59,62 +60,210 @@ $(document).ready(function () {
         $('input[name="prix_remise_global"]').val(calculerPrix($(prix_normal).val(), $(this).val()))
     })
 
-    //Template article
-    const displayContent = (content) => {
-
-        $.each(content , function(index, item) { 
-
-            var html = `
-            <div class="portfolio-item portfolio-effect__item portfolio-item--eff1" style="background-image:URL('${item.img}')">
-
-                <div class="portfolio-item__info">
-
-                    <h3 class="portfolio-item__header">${item.name}</h3>
-                
-                    <div class="portfolio-item__links">
-                        
-                        <div class="portfolio-item__link-block">
-                        
-                            <a class="portfolio-item__link" href="#" title="Ajouter une promotion" data-id="${item.id}" data-price="${item.price}" data-img="${item.img}" data-nom="${item.name}" data-toggle="modal" data-target="#promotionModal">
-                                <i class="material-icons"><i class="fas fa-cog"></i></i>                            
-                            </a>                       
-                        </div>
-                        
-                    </div>
-
-                </div>
-            
-            </div>
-            `;
-
-            $(".portfolio-effect").append(html);
-        })
-
-    }
-
     // Create - update promotion spécifique
     $("#promotionForm").submit(function (e) {
         e.preventDefault();
 
-        var formdata = new FormData(this);
-        console.log(formdata);
-/*
-        fetch("http://localhost:8000/api/product", {
-            method: "GET",
+        var usersValues = Array.isArray($("#selectUsers").val()) ? $("#selectUsers").val() : [$("#selectUsers").val()];
+        id = $("#product-id").val();
+
+        var params = {
+            product_id: id,
+            promotion: $('input[name="promotion"]').val(),
+            users: usersValues
+        }
+
+        fetch("http://localhost:8000/api/promotion/store/"+id, {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
             },
-          }).then((response) => response.json()).then((products) => {
-              console.log(products.data.data);
-              displayContent(products.data.data);
-          });*/
+            body: JSON.stringify(params)
+          }).then((response) => loadModal(id)
+          );
     })
 
     // Create - update promotion globale
     $("#promotionFormGlobal").submit(function (e) {
         e.preventDefault();
     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    var tableAdmin = null;
+
+    function initDatatable(table) {
+        // Récupération des produits
+    fetch("http://localhost:8000/api/product", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      })
+          .then((x) => x.json())
+          .then((x) => {
+
+              const dataArray = [];
+              const columnsToExclude = [
+                "created_at",
+                "updated_at",
+              ];
+
+              Object.entries(x.data[0]).forEach(([key, value]) => {
+                if (!columnsToExclude.includes(key)) {
+                  var column = {};
+                  column.title = key
+                    .replace("ID", "Id")
+                    .replace(/([A-Z])/g, " $1")
+                    .toUpperCase().replace(/_/g, " ");// => pour transformer du snake case;
+                  column.data = key;
+                  // Paramètres spécifiques
+                  if ((key == "created_at") || (key == "updated_at")) {
+                    column.render = function (data) {
+                      return convertirDate(data);
+                    };
+                  } else if (key == "img") {
+                    column.render = function (data) {
+                      return (
+                        `<div class="picture" style="background-image:URL('` +
+                        data +
+                        `');"></div>`
+                      );
+                    };
+                } else if ((key == "price")||(key == "promotion")) {
+                    column.render = function (data) {
+                        if((data != 0) && (data != null)) {
+                        return (
+                          data + ` €`
+                        );
+                    } else {
+                        return '';
+                    }
+                      };
+                }
+                  dataArray.push(column);
+                }
+              });
+              // Paramètres globaux
+              dataArray.push({
+                class: "action",
+                title: "ACTIONS",
+                orderable: false,
+                render: function (data, type, row, meta) {
+                    var dataAttributes = "";
+                    Object.entries(row).forEach(([key, value]) => {
+                        dataAttributes += "data-" + key.toLowerCase() + '="' + value + '" ';
+                    })
+                  return (
+                    '<div class="btn btn-outline-blue editLink mr-3" data-id="' +
+                    row.id +
+                    '"' +
+                    dataAttributes +
+                    ' data-toggle="modal" data-target="#promotionModal"><i class="far fa-edit"></i></div>'
+                  );
+                },
+              });
+              if (tableAdmin != null) {
+                tableAdmin.destroy();
+                $("#tableAdmin").empty();
+              }
+              tableAdmin = $("#tableAdmin").DataTable({
+                columns: dataArray,
+                data: x.data,
+                scrollX: true,
+                autoWidth: false,
+                order: [[0, "asc"]],
+              });
+
+          });
+      }
+
+      function convertirDate(date) {
+        var monthName = [
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
+        ];
+        var dayName = [
+          "Dimanche",
+          "Lundi",
+          "Mardi",
+          "Mercredi",
+          "Jeudi",
+          "Vendredi",
+          "Samedi",
+        ];
+    
+        var maDate = new Date(date);
+        var jour = maDate.getDay(); //Jour
+        var njour = maDate.getDate(); //Numéro du jour
+        var mois = maDate.getMonth(); //Mois (commence à 0, donc +1)
+        var annee = maDate.getFullYear(); //Année sur 2 chiffres ou getFullYear sur 4
+    
+        var resultDate = njour + " " + monthName[mois] + " " + annee;
+        return resultDate;
+      }
+
+      initDatatable();
+
+      //Initialisation de dataTable avec des paramètres personnalisés
+  if ($.fn.dataTable) {
+    $.extend($.fn.dataTable.defaults, {
+      language: {
+        sEmptyTable: "Aucune donnée disponible dans le tableau",
+        sInfo: "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments",
+        sInfoEmpty: "Affichage de l'élément 0 à 0 sur 0 élément",
+        sInfoFiltered: "(filtré à partir de _MAX_ éléments au total)",
+        sInfoPostFix: "",
+        sInfoThousands: ",",
+        sLengthMenu: "Afficher _MENU_ éléments",
+        sLoadingRecords: "Chargement...",
+        sProcessing: "Traitement...",
+        sSearch: "Rechercher :",
+        sZeroRecords: "Aucun élément correspondant trouvé",
+        oPaginate: {
+          sFirst: "Premier",
+          sLast: "Dernier",
+          sNext: "Suivant",
+          sPrevious: "Précédent",
+        },
+        oAria: {
+          sSortAscending: ": activer pour trier la colonne par ordre croissant",
+          sSortDescending:
+            ": activer pour trier la colonne par ordre décroissant",
+        },
+        select: {
+          rows: {
+            _: "%d lignes sélectionnées",
+            0: "Aucune ligne sélectionnée",
+            1: "1 ligne sélectionnée",
+          },
+        },
+      },
+    });
+  }
 
 })
 

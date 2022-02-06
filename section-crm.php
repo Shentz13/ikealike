@@ -54,7 +54,10 @@
                             </div>
                         </div>
                     </fieldset>
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <div class="btn-cont">
+                        <button type="button" id="delete-global" class="btn btn-danger">Supprimer</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
                 </form>
 
                 <div class="alert alert-warning" role="alert">
@@ -102,8 +105,13 @@
                             </select>
                         </div>
                     </fieldset>
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <div class="btn-cont">
+                        <button type="button" id="delete-specific" class="btn btn-danger">Supprimer</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+
                 </form>
+                <input type="hidden" name="product_id" id="product-id">
             </div>
             <div class="modal-footer bg-dark text-light">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
@@ -111,4 +119,8 @@
 
         </div>
     </div>
+</div>
+
+<div id="table">
+    <table id="tableAdmin" class="table" style="min-width:100%;"></table>
 </div>
